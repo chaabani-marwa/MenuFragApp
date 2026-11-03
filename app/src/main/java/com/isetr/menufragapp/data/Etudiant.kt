@@ -9,3 +9,4 @@ data class Etudiant(
     val classe: String,
     val email: String
 )
+

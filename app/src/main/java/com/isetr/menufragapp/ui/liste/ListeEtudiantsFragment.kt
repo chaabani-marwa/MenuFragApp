@@ -67,7 +67,7 @@ class ListeEtudiantsFragment : Fragment() {
                 // 1. Mettre à jour le LiveData dans le ViewModel (Partage de la donnée)
                 etudiantViewModel.selectionnerEtudiant(etudiant)
                 // 2. Naviguer vers le Fragment (Détail)
-                // a compléter 
+                findNavController().navigate(R.id.action_nav_liste_etudiants_to_nav_detail_etudiant)
             }
 
         )

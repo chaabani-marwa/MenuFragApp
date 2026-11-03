@@ -4,10 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.isetr.menufragapp.R
 import com.isetr.menufragapp.data.Etudiant
 import com.isetr.menufragapp.databinding.FragmentAjoutEtudiantBinding
 import com.isetr.menufragapp.viewModel.EtudiantViewModel
@@ -59,6 +60,7 @@ class AjoutEtudiantFragment : Fragment() {
 
             // 1. Appelle la fonction du ViewModel pour modifier les données
             etudiantViewModel.addEtudiant(nouvelEtudiant)
+            findNavController().navigate(R.id.action_nav_ajout_etudiant_to_nav_liste_etudiants)
             // (Optionnel : afficher un Toast de succès)
             Toast.makeText(requireContext(), "Étudiant ajouté : $id", Toast.LENGTH_SHORT).show()
             binding.editTextClasse.text?.clear()
