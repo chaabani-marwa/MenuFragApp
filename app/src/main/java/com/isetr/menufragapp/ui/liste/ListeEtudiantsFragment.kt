@@ -11,10 +11,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.isetr.menufragapp.R
-import com.isetr.menufragapp.data.Etudiant
 import com.isetr.menufragapp.databinding.FragmentListeEtudiantsBinding
 import com.isetr.menufragapp.viewModel.EtudiantViewModel
-import kotlin.getValue
 
 class ListeEtudiantsFragment : Fragment() {
     private var _binding: FragmentListeEtudiantsBinding? = null
@@ -27,51 +25,49 @@ class ListeEtudiantsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentListeEtudiantsBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-        // val textView: TextView = binding.textListe
-        // textView.text = "Liste Etudiants Fragment"
-        return root
+        return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
+        // 1. Initialiser le RecyclerView et son Adapter
+        fillRecyclerView()
+
+        // 2. Observer les modifications de la liste d'étudiants
+        etudiantViewModel.etudiants.observe(viewLifecycleOwner) { nouvelleListe ->
+           // etudiantAdapter.submitList(nouvelleListe)
+            etudiantAdapter.updateList(nouvelleListe)
+        }
+    }
+
+    private fun fillRecyclerView() {
+        val recyclerView: RecyclerView = binding.recyclerViewEtudiants
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.setHasFixedSize(true)
+
+        etudiantAdapter = EtudiantAdapter(
+            etudiants = mutableListOf(),
+            onItemClicked = { etudiant ->
+                Toast.makeText(
+                    requireContext(),
+                    "Étudiant sélectionné : ${etudiant.email}",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                // Mettre à jour l'étudiant sélectionné dans le ViewModel
+                etudiantViewModel.selectionnerEtudiant(etudiant)
+
+                // Naviguer vers le Fragment Détail
+                findNavController().navigate(R.id.action_nav_liste_etudiants_to_nav_detail_etudiant)
+            }
+        )
+        recyclerView.adapter = etudiantAdapter
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        // 🎯 L'appel de la méthode doit se faire ici !
-        fillRecyclerView()
-        // 2. Observation de l'état de la liste dans le ViewModel
-        etudiantViewModel.etudiants.observe(viewLifecycleOwner) { nouvelleListe ->
-            // Met à jour la liste dans l'Adapter et notifie le RecyclerView
-            (binding.recyclerViewEtudiants.adapter as EtudiantAdapter).updateList(nouvelleListe)
-            // Note : Vous devrez implémenter une méthode `updateList` dans votre EtudAdapter.
-        }
-    }
-    private fun fillRecyclerView() {
-      
-        val recyclerView: RecyclerView = binding.recyclerViewEtudiants
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.setHasFixedSize(true)
-        etudiantAdapter = EtudiantAdapter(etudiants = mutableListOf(),
-            onItemClicked = { etudiant ->
-                Toast.makeText(requireContext(),
-                    "etudiant selectionné ${etudiant.email}",
-                    Toast.LENGTH_SHORT).show()
-                // Ce bloc de code (lambda) est appelé quand un élément de la liste est cliqué
-                // 1. Mettre à jour le LiveData dans le ViewModel (Partage de la donnée)
-                etudiantViewModel.selectionnerEtudiant(etudiant)
-                // 2. Naviguer vers le Fragment (Détail)
-                findNavController().navigate(R.id.action_nav_liste_etudiants_to_nav_detail_etudiant)
-            }
-
-        )
-        recyclerView.adapter = etudiantAdapter
-    }
 }
-
